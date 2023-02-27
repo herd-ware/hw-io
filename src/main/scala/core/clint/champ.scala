@@ -1,9 +1,9 @@
 /*
- * File: ceps.scala                                                            *
+ * File: champ.scala                                                           *
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:06:44 pm                                       *
+ * Last Modified: 2023-02-27 06:23:43 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -19,11 +19,11 @@ import chisel3._
 import chisel3.experimental.IO
 import chisel3.util._
 
-import herd.common.isa.ceps._
+import herd.common.isa.champ._
 
 
-class Ceps (p: ClintParams) extends Module {
-  require(p.useCeps, "Ceps Clint needs the use of CEPS ISA.")
+class Champ (p: ClintParams) extends Module {
+  require(p.useChamp, "Champ Clint needs the use of CHAMP ISA.")
   require(((p.nDataBit == 32) || (p.nDataBit == 64)), "Clint must have 32 or 64 bits.")
   
   val io = IO( new Bundle {
@@ -108,7 +108,7 @@ class Ceps (p: ClintParams) extends Module {
   io.b_core.ip := r_ip.asUInt
 }
 
-object Ceps extends App {
-  (new chisel3.stage.ChiselStage).emitVerilog(new Ceps(ClintConfigBase), args)
+object Champ extends App {
+  (new chisel3.stage.ChiselStage).emitVerilog(new Champ(ClintConfigBase), args)
 }
 

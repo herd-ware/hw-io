@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:07:07 pm                                       *
+ * Last Modified: 2023-02-27 06:24:05 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -57,7 +57,7 @@ object PRIV {
   def MTIMER_CMPH       = "h01c"
 }
 
-object CEPS {
+object CHAMP {
   // Level 0 timer
   def L0TIMER_NBYTE      = 0x20
   def L0TIMER_STATUS     = "h000"

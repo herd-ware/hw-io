@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:11:18 pm                                       *
+ * Last Modified: 2023-02-27 06:20:37 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -46,8 +46,8 @@ trait RegMemParams extends Mb4sMemParams
   def nAddrBase: String
   def readOnly: Boolean = pPort(0).readOnly
 
-  def useCeps: Boolean = pPort(0).useDome
-  def nCepsTrapLvl: Int
+  def useChamp: Boolean = pPort(0).useDome
+  def nChampTrapLvl: Int
   def useDome: Boolean = pPort(0).useDome
   def nDome: Int = pPort(0).nDome
   def multiDome: Boolean = pPort(0).multiDome
@@ -55,8 +55,8 @@ trait RegMemParams extends Mb4sMemParams
 
   def useReqReg: Boolean
   def nPlicContext: Int = {
-    if (useCeps) {
-      return nHart * nCepsTrapLvl
+    if (useChamp) {
+      return nHart * nChampTrapLvl
     } else {
       return nHart
     }
@@ -83,7 +83,7 @@ case class RegMemConfig (
   nAddrBit: Int,
   nAddrBase: String,
 
-  nCepsTrapLvl: Int,
+  nChampTrapLvl: Int,
 
   useReqReg: Boolean,
   nPlicPrio: Int,

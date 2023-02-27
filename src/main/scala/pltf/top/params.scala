@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:11:33 pm                                       *
+ * Last Modified: 2023-02-27 06:20:58 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -37,7 +37,7 @@ trait IOPltfParams extends RegMemParams {
   def nAddrBit: Int
   def nAddrBase: String
 
-  def nCepsTrapLvl: Int
+  def nChampTrapLvl: Int
 
   def useReqReg: Boolean
   def nPlicPrio: Int
@@ -117,7 +117,7 @@ case class IOPltfConfig (
   nAddrBit: Int,
   nAddrBase: String,
 
-  nCepsTrapLvl: Int,
+  nChampTrapLvl: Int,
 
   useReqReg: Boolean,
   nPlicPrio: Int,

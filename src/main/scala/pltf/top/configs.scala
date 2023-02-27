@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:11:25 pm                                       *
+ * Last Modified: 2023-02-27 06:20:54 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -39,7 +39,7 @@ object IOPltfConfigBase extends IOPltfConfig (
   nAddrBit = 32,
   nAddrBase = "00000000",
 
-  nCepsTrapLvl = 2,
+  nChampTrapLvl = 2,
 
   useReqReg = false,
   nPlicPrio = 8,

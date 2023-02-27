@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:11:14 pm                                       *
+ * Last Modified: 2023-02-27 06:24:09 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -124,7 +124,7 @@ object PRIV {
   def SSI             = "h4001000"
 }
 
-object CEPS {
+object CHAMP {
   // Software interrupts
   def L0SI            = "h4000000"
   def L1SI            = "h4001000"

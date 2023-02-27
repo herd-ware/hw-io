@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:06:55 pm                                       *
+ * Last Modified: 2023-02-27 06:12:39 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -23,8 +23,8 @@ import chisel3.util._
 trait ClintParams {
   def nDataBit: Int
 
-  def useCeps: Boolean
-  def nCepsTrapLvl: Int
+  def useChamp: Boolean
+  def nChampTrapLvl: Int
 
   def nClintPrio: Int = 8
 }
@@ -32,6 +32,6 @@ trait ClintParams {
 case class ClintConfig (
   nDataBit: Int,
 
-  useCeps: Boolean,
-  nCepsTrapLvl: Int
+  useChamp: Boolean,
+  nChampTrapLvl: Int
 ) extends ClintParams

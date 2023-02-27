@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-26 09:49:17 am                                       *
+ * Last Modified: 2023-02-27 06:21:05 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -53,10 +53,10 @@ class IOPltf (p: IOPltfParams) extends Module {
     )
     val b_i2c = Vec(p.nI2c, new I2cIO())
 
-    val o_irq_msi = if (!p.useCeps) Some(Output(Vec(p.nHart, Bool()))) else None
-    val o_irq_mei = if (!p.useCeps) Some(Output(Vec(p.nHart, Bool()))) else None
-    val o_irq_lsi = if (p.useCeps) Some(Output(Vec(p.nHart, Vec(p.nCepsTrapLvl, Bool())))) else None
-    val o_irq_lei = if (p.useCeps) Some(Output(Vec(p.nHart, Vec(p.nCepsTrapLvl, Bool())))) else None
+    val o_irq_msi = if (!p.useChamp) Some(Output(Vec(p.nHart, Bool()))) else None
+    val o_irq_mei = if (!p.useChamp) Some(Output(Vec(p.nHart, Bool()))) else None
+    val o_irq_lsi = if (p.useChamp) Some(Output(Vec(p.nHart, Vec(p.nChampTrapLvl, Bool())))) else None
+    val o_irq_lei = if (p.useChamp) Some(Output(Vec(p.nHart, Vec(p.nChampTrapLvl, Bool())))) else None
   })
 
   // ******************************
@@ -156,9 +156,9 @@ class IOPltf (p: IOPltfParams) extends Module {
   //             I/Os
   // ******************************
   for (h <- 0 until p.nHart) {
-    if (p.useCeps) {
-      for (tl <- 0 until p.nCepsTrapLvl) {
-        io.o_irq_lei.get(h)(tl) := m_plic.io.o_irq_ei(h * p.nCepsTrapLvl + tl)
+    if (p.useChamp) {
+      for (tl <- 0 until p.nChampTrapLvl) {
+        io.o_irq_lei.get(h)(tl) := m_plic.io.o_irq_ei(h * p.nChampTrapLvl + tl)
         io.o_irq_lsi.get(h)(tl) := m_regmem.io.o_irq_lsi.get(tl)(h)
       }
     } else {

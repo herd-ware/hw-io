@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:07:25 pm                                       *
+ * Last Modified: 2023-02-27 06:20:14 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -33,7 +33,7 @@ trait IOCoreParams extends RegMemParams
   def nAddrBase: String
   def nAddrBit: Int
 
-  def nCepsTrapLvl: Int
+  def nChampTrapLvl: Int
 
   def useReqReg: Boolean
   def nScratch: Int  
@@ -51,7 +51,7 @@ case class IOCoreConfig (
   nAddrBit: Int,
   nAddrBase: String,
 
-  nCepsTrapLvl: Int,
+  nChampTrapLvl: Int,
 
   useReqReg: Boolean,
   nScratch: Int,  

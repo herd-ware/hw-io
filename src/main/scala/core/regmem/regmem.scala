@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:07:14 pm                                       *
+ * Last Modified: 2023-02-27 06:21:41 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -38,8 +38,8 @@ class RegMem (p: RegMemParams) extends Module {
     val i_slct = if (p.useDomeSlct) Some(Input(new SlctBus(p.nDome, p.nPart, 1))) else None  
     val b_port  = Flipped(new Mb4sIO(p.pPort(0)))
 
-    val b_mtimer = if (!p.useCeps) Some(Flipped(new TimerRegMemIO())) else None
-    val b_ltimer = if (p.useCeps) Some(Vec(p.nCepsTrapLvl, Flipped(new TimerRegMemIO()))) else None
+    val b_mtimer = if (!p.useChamp) Some(Flipped(new TimerRegMemIO())) else None
+    val b_ltimer = if (p.useChamp) Some(Vec(p.nChampTrapLvl, Flipped(new TimerRegMemIO()))) else None
     val b_ctimer = if (p.nCTimer > 0) Some(Vec(p.nCTimer, Flipped(new TimerRegMemIO()))) else None
   })
 
@@ -88,8 +88,8 @@ class RegMem (p: RegMemParams) extends Module {
   // ******************************
   //         DEFAULT I/Os
   // ******************************
-  if (p.useCeps) {
-    for (tl <- 0 until p.nCepsTrapLvl) {
+  if (p.useChamp) {
+    for (tl <- 0 until p.nChampTrapLvl) {
       for (w <- 0 until 6) {
         io.b_ltimer.get(tl).wen(w) := false.B
       }
@@ -152,47 +152,47 @@ class RegMem (p: RegMemParams) extends Module {
     // ''''''''''''''''''''''''''''''
     //            32 BITS
     // ''''''''''''''''''''''''''''''
-    if (p.useCeps) {
+    if (p.useChamp) {
       // Level 0 Timer
-      if (p.nCepsTrapLvl > 0) {
-        when (isReqAddr(CEPS.L0TIMER_STATUS.U)) {
+      if (p.nChampTrapLvl > 0) {
+        when (isReqAddr(CHAMP.L0TIMER_STATUS.U)) {
           w_rdata := io.b_ltimer.get(0).status
         }
-        when (isReqAddr(CEPS.L0TIMER_CONFIG.U)) {
+        when (isReqAddr(CHAMP.L0TIMER_CONFIG.U)) {
           w_rdata := io.b_ltimer.get(0).config
         }
-        when (isReqAddr(CEPS.L0TIMER_CNT.U)) {
+        when (isReqAddr(CHAMP.L0TIMER_CNT.U)) {
           w_rdata := io.b_ltimer.get(0).cnt(31, 0)
         }
-        when (isReqAddr(CEPS.L0TIMER_CNTH.U)) {
+        when (isReqAddr(CHAMP.L0TIMER_CNTH.U)) {
           w_rdata := io.b_ltimer.get(0).cnt(63, 32)
         }
-        when (isReqAddr(CEPS.L0TIMER_CMP.U)) {
+        when (isReqAddr(CHAMP.L0TIMER_CMP.U)) {
           w_rdata := io.b_ltimer.get(0).cmp(31, 0)
         }
-        when (isReqAddr(CEPS.L0TIMER_CMPH.U)) {
+        when (isReqAddr(CHAMP.L0TIMER_CMPH.U)) {
           w_rdata := io.b_ltimer.get(0).cmp(63, 32)
         }
       }
 
       // Level 1 Timer
-      if (p.nCepsTrapLvl > 1) {
-        when (isReqAddr(CEPS.L0TIMER_STATUS.U)) {
+      if (p.nChampTrapLvl > 1) {
+        when (isReqAddr(CHAMP.L0TIMER_STATUS.U)) {
           w_rdata := io.b_ltimer.get(1).status
         }
-        when (isReqAddr(CEPS.L0TIMER_CONFIG.U)) {
+        when (isReqAddr(CHAMP.L0TIMER_CONFIG.U)) {
           w_rdata := io.b_ltimer.get(1).config
         }
-        when (isReqAddr(CEPS.L1TIMER_CNT.U)) {
+        when (isReqAddr(CHAMP.L1TIMER_CNT.U)) {
           w_rdata := io.b_ltimer.get(1).cnt(31, 0)
         }
-        when (isReqAddr(CEPS.L1TIMER_CNTH.U)) {
+        when (isReqAddr(CHAMP.L1TIMER_CNTH.U)) {
           w_rdata := io.b_ltimer.get(1).cnt(63, 32)
         }
-        when (isReqAddr(CEPS.L1TIMER_CMP.U)) {
+        when (isReqAddr(CHAMP.L1TIMER_CMP.U)) {
           w_rdata := io.b_ltimer.get(1).cmp(31, 0)
         }
-        when (isReqAddr(CEPS.L1TIMER_CMPH.U)) {
+        when (isReqAddr(CHAMP.L1TIMER_CMPH.U)) {
           w_rdata := io.b_ltimer.get(1).cmp(63, 32)
         }
       }
@@ -252,23 +252,23 @@ class RegMem (p: RegMemParams) extends Module {
     // ''''''''''''''''''''''''''''''
     if (p.nDataBit == 64) {
       when (w_req.ctrl.get.size === SIZE.B8.U) {
-        if (p.useCeps) {
+        if (p.useChamp) {
           // Level 0 Timer
-          if (p.nCepsTrapLvl > 0) {
-            when (isReqAddr(CEPS.L0TIMER_CNT.U)) {
+          if (p.nChampTrapLvl > 0) {
+            when (isReqAddr(CHAMP.L0TIMER_CNT.U)) {
               w_rdata := io.b_ltimer.get(0).cnt
             }
-            when (isReqAddr(CEPS.L0TIMER_CMP.U)) {
+            when (isReqAddr(CHAMP.L0TIMER_CMP.U)) {
               w_rdata := io.b_ltimer.get(0).cmp
             }
           }
 
           // Level 1 Timer
-          if (p.nCepsTrapLvl > 1) {
-            when (isReqAddr(CEPS.L1TIMER_CNT.U)) {
+          if (p.nChampTrapLvl > 1) {
+            when (isReqAddr(CHAMP.L1TIMER_CNT.U)) {
               w_rdata := io.b_ltimer.get(1).cnt
             }
-            when (isReqAddr(CEPS.L1TIMER_CMP.U)) {
+            when (isReqAddr(CHAMP.L1TIMER_CMP.U)) {
               w_rdata := io.b_ltimer.get(1).cmp
             }
           }
@@ -366,26 +366,26 @@ class RegMem (p: RegMemParams) extends Module {
       // ''''''''''''''''''''''''''''''
       //            32 BITS
       // ''''''''''''''''''''''''''''''
-      if (p.useCeps) {
+      if (p.useChamp) {
         // Level 0 Timer
-        if (p.nCepsTrapLvl > 0) {
+        if (p.nChampTrapLvl > 0) {
           when (io.b_dome.get(w_ack.dome.get).tl(0)) {
-            io.b_ltimer.get(0).wen(1) := (isAckAddr(CEPS.L0TIMER_CONFIG.U))
-            io.b_ltimer.get(0).wen(2) := (isAckAddr(CEPS.L0TIMER_CNT.U))
-            io.b_ltimer.get(0).wen(3) := (isAckAddr(CEPS.L0TIMER_CNTH.U))
-            io.b_ltimer.get(0).wen(4) := (isAckAddr(CEPS.L0TIMER_CMP.U))
-            io.b_ltimer.get(0).wen(5) := (isAckAddr(CEPS.L0TIMER_CMPH.U))
+            io.b_ltimer.get(0).wen(1) := (isAckAddr(CHAMP.L0TIMER_CONFIG.U))
+            io.b_ltimer.get(0).wen(2) := (isAckAddr(CHAMP.L0TIMER_CNT.U))
+            io.b_ltimer.get(0).wen(3) := (isAckAddr(CHAMP.L0TIMER_CNTH.U))
+            io.b_ltimer.get(0).wen(4) := (isAckAddr(CHAMP.L0TIMER_CMP.U))
+            io.b_ltimer.get(0).wen(5) := (isAckAddr(CHAMP.L0TIMER_CMPH.U))
           }
         }
 
         // Level 1 Timer
-        if (p.nCepsTrapLvl > 1) {
+        if (p.nChampTrapLvl > 1) {
           when (io.b_dome.get(w_ack.dome.get).tl(1)) {
-            io.b_ltimer.get(1).wen(1) := (isAckAddr(CEPS.L1TIMER_CONFIG.U))
-            io.b_ltimer.get(1).wen(2) := (isAckAddr(CEPS.L1TIMER_CNT.U))
-            io.b_ltimer.get(1).wen(3) := (isAckAddr(CEPS.L1TIMER_CNTH.U))
-            io.b_ltimer.get(1).wen(4) := (isAckAddr(CEPS.L1TIMER_CMP.U))
-            io.b_ltimer.get(1).wen(5) := (isAckAddr(CEPS.L1TIMER_CMPH.U))
+            io.b_ltimer.get(1).wen(1) := (isAckAddr(CHAMP.L1TIMER_CONFIG.U))
+            io.b_ltimer.get(1).wen(2) := (isAckAddr(CHAMP.L1TIMER_CNT.U))
+            io.b_ltimer.get(1).wen(3) := (isAckAddr(CHAMP.L1TIMER_CNTH.U))
+            io.b_ltimer.get(1).wen(4) := (isAckAddr(CHAMP.L1TIMER_CMP.U))
+            io.b_ltimer.get(1).wen(5) := (isAckAddr(CHAMP.L1TIMER_CMPH.U))
           }
         }  
       } else {
@@ -418,20 +418,20 @@ class RegMem (p: RegMemParams) extends Module {
       // ''''''''''''''''''''''''''''''
       if (p.nDataBit == 64) {
         when (w_ack.ctrl.get.size === SIZE.B8.U) {
-          if (p.useCeps) {
+          if (p.useChamp) {
             // Level 0 Timer
-            if (p.nCepsTrapLvl > 0) {
+            if (p.nChampTrapLvl > 0) {
               when (io.b_dome.get(w_ack.dome.get).tl(0)) {
-                io.b_ltimer.get(0).wen(2) := (isAckAddr(CEPS.L0TIMER_CNT.U))
-                io.b_ltimer.get(0).wen(4) := (isAckAddr(CEPS.L0TIMER_CMP.U))
+                io.b_ltimer.get(0).wen(2) := (isAckAddr(CHAMP.L0TIMER_CNT.U))
+                io.b_ltimer.get(0).wen(4) := (isAckAddr(CHAMP.L0TIMER_CMP.U))
               }
             }
 
             // Level 1 Timer
-            if (p.nCepsTrapLvl > 0) {
+            if (p.nChampTrapLvl > 0) {
               when (io.b_dome.get(w_ack.dome.get).tl(1)) {
-                io.b_ltimer.get(1).wen(2) := (isAckAddr(CEPS.L1TIMER_CNT.U))
-                io.b_ltimer.get(1).wen(4) := (isAckAddr(CEPS.L1TIMER_CMP.U))
+                io.b_ltimer.get(1).wen(2) := (isAckAddr(CHAMP.L1TIMER_CNT.U))
+                io.b_ltimer.get(1).wen(4) := (isAckAddr(CHAMP.L1TIMER_CMP.U))
               }
             }
           } else {

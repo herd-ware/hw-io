@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:11:21 pm                                       *
+ * Last Modified: 2023-02-27 06:21:48 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -58,7 +58,7 @@ class RegMem (p: RegMemParams) extends Module {
 
     val o_irq_msi = if (!p.useDome) Some(Output(Vec((p.nHart32b * 32), Bool()))) else None
     val o_irq_ssi = if (!p.useDome) Some(Output(Vec((p.nHart32b * 32), Bool()))) else None
-    val o_irq_lsi = if (p.useDome) Some(Output(Vec(p.nCepsTrapLvl, Vec((p.nHart32b * 32), Bool())))) else None
+    val o_irq_lsi = if (p.useDome) Some(Output(Vec(p.nChampTrapLvl, Vec((p.nHart32b * 32), Bool())))) else None
   })
 
   def isReqAddr(off: UInt): Bool = {
@@ -76,9 +76,9 @@ class RegMem (p: RegMemParams) extends Module {
   val m_req = Module(new Mb4sReqSReg(p.pPort(0), p.useReqReg))
   val m_ack = Module(new GenSReg(p, new Mb4sReqBus(p.pPort(0)), UInt(p.nDataBit.W), false, false, true))
 
-  val init_lsi = Wire(Vec(p.nCepsTrapLvl, Vec(p.nHart32b, UInt(32.W))))
+  val init_lsi = Wire(Vec(p.nChampTrapLvl, Vec(p.nHart32b, UInt(32.W))))
 
-  for (tl <- 0 until p.nCepsTrapLvl) {
+  for (tl <- 0 until p.nChampTrapLvl) {
     for (hw <- 0 until p.nHart32b) {
       init_lsi(tl)(hw) := 0.U
     }
@@ -314,20 +314,20 @@ class RegMem (p: RegMemParams) extends Module {
       }
     }
 
-    if (p.useCeps) {
+    if (p.useChamp) {
       // L0SI
-      if (p.nCepsTrapLvl > 0) {
+      if (p.nChampTrapLvl > 0) {
         for (hw <- 0 until p.nHart32b) {
-          when (isReqAddr(CEPS.L0SI.U + (hw * 4).U)) {
+          when (isReqAddr(CHAMP.L0SI.U + (hw * 4).U)) {
             w_rdata := r_lsi(0)(hw)
           }         
         }
       }
 
       // L1SI
-      if (p.nCepsTrapLvl > 1) {
+      if (p.nChampTrapLvl > 1) {
         for (hw <- 0 until p.nHart32b) {
-          when (isReqAddr(CEPS.L1SI.U + (hw * 4).U)) {
+          when (isReqAddr(CHAMP.L1SI.U + (hw * 4).U)) {
             w_rdata := r_lsi(1)(hw)
           }         
         }
@@ -576,20 +576,20 @@ class RegMem (p: RegMemParams) extends Module {
           }
         }
 
-        if (p.useCeps) {
+        if (p.useChamp) {
           // L0SI 
-          if (p.nCepsTrapLvl > 0) {
+          if (p.nChampTrapLvl > 0) {
             for (hd <- 0 until p.nHart64b) {
-              when (isReqAddr(CEPS.L0SI.U + (hd * 8).U)) {
+              when (isReqAddr(CHAMP.L0SI.U + (hd * 8).U)) {
                 w_rdata := Cat(r_lsi(0)(hd * 2 + 1), r_lsi(0)(hd * 2))
               }         
             }
           }
 
           // L1SI 
-          if (p.nCepsTrapLvl > 1) {
+          if (p.nChampTrapLvl > 1) {
             for (hd <- 0 until p.nHart64b) {
-              when (isReqAddr(CEPS.L1SI.U + (hd * 8).U)) {
+              when (isReqAddr(CHAMP.L1SI.U + (hd * 8).U)) {
                 w_rdata := Cat(r_lsi(1)(hd * 2 + 1), r_lsi(1)(hd * 2))
               }         
             }
@@ -769,20 +769,20 @@ class RegMem (p: RegMemParams) extends Module {
         io.b_plic.wcfg(co)(1) := isAckAddr(COMMON.PLIC_CLAIM.U + (co * 4096).U)
       }
 
-      if (p.useCeps) {
+      if (p.useChamp) {
         // L0SI 
-        if (p.nCepsTrapLvl > 0) {
+        if (p.nChampTrapLvl > 0) {
           for (hw <- 0 until p.nHart32b) {
-            when (isAckAddr(CEPS.L0SI.U + (hw * 4).U)) {
+            when (isAckAddr(CHAMP.L0SI.U + (hw * 4).U)) {
               r_lsi(0)(hw) := w_wdata(31, 0)
             }         
           }
         }
 
         // L1SI 
-        if (p.nCepsTrapLvl > 0) {
+        if (p.nChampTrapLvl > 0) {
           for (hw <- 0 until p.nHart32b) {
-            when (isAckAddr(CEPS.L1SI.U + (hw * 4).U)) {
+            when (isAckAddr(CHAMP.L1SI.U + (hw * 4).U)) {
               r_lsi(1)(hw) := w_wdata(31, 0)
             }         
           }
@@ -967,20 +967,20 @@ class RegMem (p: RegMemParams) extends Module {
             }
           }
 
-          if (p.useCeps) {
+          if (p.useChamp) {
             // L0SI 
-            if (p.nCepsTrapLvl > 0) {
+            if (p.nChampTrapLvl > 0) {
               for (hd <- 0 until p.nHart64b) {
-                when (isAckAddr(CEPS.L0SI.U + (hd * 8).U)) {
+                when (isAckAddr(CHAMP.L0SI.U + (hd * 8).U)) {
                   r_lsi(0)(hd * 2 + 1) := w_wdata(63, 32)
                 }         
               }
             }
 
             // L1SI 
-            if (p.nCepsTrapLvl > 1) {
+            if (p.nChampTrapLvl > 1) {
               for (hd <- 0 until p.nHart64b) {
-                when (isAckAddr(CEPS.L1SI.U + (hd * 8).U)) {
+                when (isAckAddr(CHAMP.L1SI.U + (hd * 8).U)) {
                   r_lsi(1)(hd * 2 + 1) := w_wdata(63, 32)
                 }         
               }
@@ -1064,8 +1064,8 @@ class RegMem (p: RegMemParams) extends Module {
   //              I/Os
   // ******************************
   // Interrupts
-  if (p.useCeps) {
-    for (tl <- 0 until p.nCepsTrapLvl) {
+  if (p.useChamp) {
+    for (tl <- 0 until p.nChampTrapLvl) {
       io.o_irq_lsi.get(tl) := (r_lsi(tl).asUInt).asBools
     }
   } else {

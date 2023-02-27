@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:06:59 pm                                       *
+ * Last Modified: 2023-02-27 06:12:48 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -23,7 +23,7 @@ import herd.common.isa.priv._
 
 
 class Priv (p: ClintParams) extends Module {
-  require(!p.useCeps, "Priv Clint needs the use of RISC-V Priv ISA.")
+  require(!p.useChamp, "Priv Clint needs the use of RISC-V Priv ISA.")
   require(((p.nDataBit == 32) || (p.nDataBit == 64)), "Clint must have 32 or 64 bits.")
   
   val io = IO( new Bundle {

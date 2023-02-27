@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:06:49 pm                                       *
+ * Last Modified: 2023-02-27 06:12:43 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -22,6 +22,6 @@ import chisel3.util._
 object ClintConfigBase extends ClintConfig (
   nDataBit = 32,
 
-  useCeps = true,
-  nCepsTrapLvl = 2
+  useChamp = true,
+  nChampTrapLvl = 2
 )
