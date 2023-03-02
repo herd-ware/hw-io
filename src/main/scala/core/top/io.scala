@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-27 06:23:16 pm                                       *
+ * Last Modified: 2023-03-02 01:37:46 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -18,7 +18,7 @@ package herd.io.core
 import chisel3._
 import chisel3.util._
 
-import herd.common.dome._
+import herd.common.field._
 import herd.common.mem.mb4s._
 import herd.common.isa.priv.{IRQ => PIRQ}
 import herd.common.isa.champ.{IRQ => HFIRQ}
@@ -35,9 +35,9 @@ class IOCore (p: IOCoreParams) extends Module {
   require(((p.nDataBit == 64) || (p.nCTimer <= 4)), "IOCore must have only 4 or less CTimer in 32 bits.")
 
   val io = IO(new Bundle {    
-    val b_dome = if (p.useDome) Some(Vec(p.nDome, new DomeIO(p.nAddrBit, p.nDataBit))) else None
+    val b_field = if (p.useField) Some(Vec(p.nField, new FieldIO(p.nAddrBit, p.nDataBit))) else None
 
-    val i_slct = if (p.useDomeSlct) Some(Input(new SlctBus(p.nDome, p.nPart, 1))) else None 
+    val i_slct = if (p.useFieldSlct) Some(Input(new SlctBus(p.nField, p.nPart, 1))) else None 
     val b_port = Flipped(new Mb4sIO(p.pPort(0)))
 
     val b_clint = new ClintIO(p.nDataBit)
@@ -62,9 +62,9 @@ class IOCore (p: IOCoreParams) extends Module {
   // ******************************
   //            REGMEM
   // ******************************
-  if (p.useDome) m_regmem.io.b_dome.get <> io.b_dome.get
+  if (p.useField) m_regmem.io.b_field.get <> io.b_field.get
 
-  if (p.useDomeSlct) m_regmem.io.i_slct.get := io.i_slct.get
+  if (p.useFieldSlct) m_regmem.io.i_slct.get := io.i_slct.get
   m_regmem.io.b_port <> io.b_port
 
   // ******************************
@@ -143,11 +143,11 @@ class IOCore (p: IOCoreParams) extends Module {
   }
   
   // ******************************
-  //             DOME
+  //            FIELD
   // ******************************
-  if (p.useDome) {
-    for (d <- 0 until p.nDome) {
-      io.b_dome.get(d).free := m_regmem.io.b_dome.get(d).free
+  if (p.useField) {
+    for (f <- 0 until p.nField) {
+      io.b_field.get(f).free := m_regmem.io.b_field.get(f).free
     }
   }
 

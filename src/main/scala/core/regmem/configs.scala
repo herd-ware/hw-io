@@ -30,9 +30,9 @@ object RegMemConfigBase extends RegMemConfig (
     nAddrBit = 32,
     useAmo = false,
     nDataByte = 4,
-    useDome = false,
-    nDome = 2,
-    multiDome = false
+    useField = false,
+    nField = 2,
+    multiField = false
   )),
 
   debug = true,

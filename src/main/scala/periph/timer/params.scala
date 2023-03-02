@@ -25,9 +25,9 @@ import herd.common.gen._
 trait TimerParams extends GenParams {
   def debug: Boolean
 
-  def useDome: Boolean = false
-  def nDome: Int = 1
-  def multiDome: Boolean = false
+  def useField: Boolean = false
+  def nField: Int = 1
+  def multiField: Boolean = false
   def nPart: Int = 1
 }
 

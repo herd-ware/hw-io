@@ -46,11 +46,11 @@ trait RegMemParams extends Mb4sMemParams
   def nAddrBase: String
   def readOnly: Boolean = pPort(0).readOnly
 
-  def useChamp: Boolean = pPort(0).useDome
+  def useChamp: Boolean = pPort(0).useField
   def nChampTrapLvl: Int
-  def useDome: Boolean = pPort(0).useDome
-  def nDome: Int = pPort(0).nDome
-  def multiDome: Boolean = pPort(0).multiDome
+  def useField: Boolean = pPort(0).useField
+  def nField: Int = pPort(0).nField
+  def multiField: Boolean = pPort(0).multiField
   def nPart: Int = pPort(0).nPart
 
   def useReqReg: Boolean

@@ -30,9 +30,9 @@ object IOCoreConfigBase extends IOCoreConfig (
     nAddrBit = 32,
     useAmo = false,
     nDataByte = 4,
-    useDome = true,
-    nDome = 2,
-    multiDome = false
+    useField = true,
+    nField = 2,
+    multiField = false
   )),
 
   debug = true,

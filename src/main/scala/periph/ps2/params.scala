@@ -27,9 +27,9 @@ trait Ps2Params extends GenParams {
   def nDataByte: Int
   def nDataBit: Int = nDataByte * 8
 
-  def useDome: Boolean = false
-  def nDome: Int = 1
-  def multiDome: Boolean = false
+  def useField: Boolean = false
+  def nField: Int = 1
+  def multiField: Boolean = false
   def nPart: Int = 1
   
   def useRegMem: Boolean

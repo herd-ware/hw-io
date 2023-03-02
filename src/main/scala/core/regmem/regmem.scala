@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-27 06:21:41 pm                                       *
+ * Last Modified: 2023-03-02 01:37:36 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -20,7 +20,7 @@ import chisel3.util._
 
 import herd.common.bus._
 import herd.common.gen._
-import herd.common.dome._
+import herd.common.field._
 import herd.common.mem.mb4s._
 import herd.io.periph.uart._
 import herd.io.periph.timer._
@@ -33,9 +33,9 @@ class RegMem (p: RegMemParams) extends Module {
   require((p.nScratch <= CST.MAXSCRATCH), "Only " + CST.MAXSCRATCH + " scratch registers are possible.")
 
   val io = IO(new Bundle {       
-    val b_dome = if (p.useDome) Some(Vec(p.nDome, new DomeIO(p.nAddrBit, p.nDataBit))) else None
+    val b_field = if (p.useField) Some(Vec(p.nField, new FieldIO(p.nAddrBit, p.nDataBit))) else None
      
-    val i_slct = if (p.useDomeSlct) Some(Input(new SlctBus(p.nDome, p.nPart, 1))) else None  
+    val i_slct = if (p.useFieldSlct) Some(Input(new SlctBus(p.nField, p.nPart, 1))) else None  
     val b_port  = Flipped(new Mb4sIO(p.pPort(0)))
 
     val b_mtimer = if (!p.useChamp) Some(Flipped(new TimerRegMemIO())) else None
@@ -63,15 +63,15 @@ class RegMem (p: RegMemParams) extends Module {
   val w_wdata = Wire(UInt(p.nDataBit.W))
   
   // ******************************
-  //         DOME INTERFACE
+  //        FIELD INTERFACE
   // ******************************
-  val r_slct_req = Reg(new SlctBus(p.nDome, p.nPart, 1))
-  val r_slct_ack = Reg(new SlctBus(p.nDome, p.nPart, 1))
+  val r_slct_req = Reg(new SlctBus(p.nField, p.nPart, 1))
+  val r_slct_ack = Reg(new SlctBus(p.nField, p.nPart, 1))
 
-  val w_slct_req = Wire(new SlctBus(p.nDome, p.nPart, 1))
-  val w_slct_ack = Wire(new SlctBus(p.nDome, p.nPart, 1))
+  val w_slct_req = Wire(new SlctBus(p.nField, p.nPart, 1))
+  val w_slct_ack = Wire(new SlctBus(p.nField, p.nPart, 1))
 
-  if (p.useDomeSlct) {
+  if (p.useFieldSlct) {
     if (p.useReqReg) {
       w_slct_req := r_slct_req
     } else {
@@ -123,11 +123,11 @@ class RegMem (p: RegMemParams) extends Module {
   //             PORT
   // ------------------------------
   m_req.io.b_port <> io.b_port.req
-  if (p.useDomeSlct) m_req.io.i_slct.get := w_slct_req
+  if (p.useFieldSlct) m_req.io.i_slct.get := w_slct_req
   m_req.io.b_sout.ready := ~w_req_wait & ~w_req_await
 
   w_req.valid := m_req.io.b_sout.valid
-  if (p.useDome) w_req.dome.get := m_req.io.b_sout.dome.get
+  if (p.useField) w_req.field.get := m_req.io.b_sout.field.get
   w_req.ctrl.get := m_req.io.b_sout.ctrl.get
   if (p.readOnly) w_req.ctrl.get.op := OP.R
 
@@ -137,7 +137,7 @@ class RegMem (p: RegMemParams) extends Module {
   if (p.readOnly) {
     w_req_wwait := false.B
   } else {
-    w_req_wwait := m_ack.io.o_val.valid(w_slct_req.dome) & m_ack.io.o_val.ctrl.get(w_slct_req.dome).wa & w_req.ctrl.get.ra
+    w_req_wwait := m_ack.io.o_val.valid(w_slct_req.field) & m_ack.io.o_val.ctrl.get(w_slct_req.field).wa & w_req.ctrl.get.ra
   }  
 
   w_req_wait := w_req_wwait
@@ -314,21 +314,21 @@ class RegMem (p: RegMemParams) extends Module {
   // ------------------------------
   //           REGISTER
   // ------------------------------  
-  for (ds <- 0 until p.nDomeSlct) {
-    m_ack.io.i_flush(ds) := false.B
+  for (fs <- 0 until p.nFieldSlct) {
+    m_ack.io.i_flush(fs) := false.B
   }
 
   w_req_await := ~m_ack.io.b_sin.ready
-  if (p.useDomeSlct) m_ack.io.i_slct_in.get := w_slct_req
+  if (p.useFieldSlct) m_ack.io.i_slct_in.get := w_slct_req
   m_ack.io.b_sin.valid := w_req.valid & ~w_req_wait
-  if (p.useDome) m_ack.io.b_sin.dome.get := w_req.dome.get
+  if (p.useField) m_ack.io.b_sin.field.get := w_req.field.get
   m_ack.io.b_sin.ctrl.get := w_req.ctrl.get
   m_ack.io.b_sin.data.get := w_rdata
 
   m_ack.io.b_sout.ready := ~w_ack_pwait
-  if (p.useDomeSlct) m_ack.io.i_slct_out.get := w_slct_ack
+  if (p.useFieldSlct) m_ack.io.i_slct_out.get := w_slct_ack
   w_ack.valid := m_ack.io.b_sout.valid
-  if (p.useDome) w_ack.dome.get := m_ack.io.b_sout.dome.get
+  if (p.useField) w_ack.field.get := m_ack.io.b_sout.field.get
   w_ack.ctrl.get := m_ack.io.b_sout.ctrl.get
   w_ack.data.get := m_ack.io.b_sout.data.get
 
@@ -341,21 +341,21 @@ class RegMem (p: RegMemParams) extends Module {
   if (!p.readOnly) {
     m_wmb4s.get.io.b_port <> io.b_port.write
 
-    if (p.useDomeSlct) m_wmb4s.get.io.i_slct.get := w_slct_ack
+    if (p.useFieldSlct) m_wmb4s.get.io.i_slct.get := w_slct_ack
     m_wmb4s.get.io.b_sout.ready := w_ack.valid & w_ack.ctrl.get.wa
 
     w_wdata := m_wmb4s.get.io.b_sout.data.get
 
   } else {
-    for (ds <- 0 until p.nDomeSlct) {
-      io.b_port.write.ready(ds) := false.B
+    for (fs <- 0 until p.nFieldSlct) {
+      io.b_port.write.ready(fs) := false.B
     }
     w_wdata := DontCare
   }
 
   // Read
   io.b_port.read.valid := w_ack.valid & w_ack.ctrl.get.ra
-  if (p.useDomeSlct) io.b_port.read.dome.get := w_slct_ack.dome else if (p.useDome) io.b_port.read.dome.get := w_ack.dome.get
+  if (p.useFieldSlct) io.b_port.read.field.get := w_slct_ack.field else if (p.useField) io.b_port.read.field.get := w_ack.field.get
   io.b_port.read.data := w_ack.data.get 
 
   // ------------------------------
@@ -369,7 +369,7 @@ class RegMem (p: RegMemParams) extends Module {
       if (p.useChamp) {
         // Level 0 Timer
         if (p.nChampTrapLvl > 0) {
-          when (io.b_dome.get(w_ack.dome.get).tl(0)) {
+          when (io.b_field.get(w_ack.field.get).tl(0)) {
             io.b_ltimer.get(0).wen(1) := (isAckAddr(CHAMP.L0TIMER_CONFIG.U))
             io.b_ltimer.get(0).wen(2) := (isAckAddr(CHAMP.L0TIMER_CNT.U))
             io.b_ltimer.get(0).wen(3) := (isAckAddr(CHAMP.L0TIMER_CNTH.U))
@@ -380,7 +380,7 @@ class RegMem (p: RegMemParams) extends Module {
 
         // Level 1 Timer
         if (p.nChampTrapLvl > 1) {
-          when (io.b_dome.get(w_ack.dome.get).tl(1)) {
+          when (io.b_field.get(w_ack.field.get).tl(1)) {
             io.b_ltimer.get(1).wen(1) := (isAckAddr(CHAMP.L1TIMER_CONFIG.U))
             io.b_ltimer.get(1).wen(2) := (isAckAddr(CHAMP.L1TIMER_CNT.U))
             io.b_ltimer.get(1).wen(3) := (isAckAddr(CHAMP.L1TIMER_CNTH.U))
@@ -421,7 +421,7 @@ class RegMem (p: RegMemParams) extends Module {
           if (p.useChamp) {
             // Level 0 Timer
             if (p.nChampTrapLvl > 0) {
-              when (io.b_dome.get(w_ack.dome.get).tl(0)) {
+              when (io.b_field.get(w_ack.field.get).tl(0)) {
                 io.b_ltimer.get(0).wen(2) := (isAckAddr(CHAMP.L0TIMER_CNT.U))
                 io.b_ltimer.get(0).wen(4) := (isAckAddr(CHAMP.L0TIMER_CMP.U))
               }
@@ -429,7 +429,7 @@ class RegMem (p: RegMemParams) extends Module {
 
             // Level 1 Timer
             if (p.nChampTrapLvl > 0) {
-              when (io.b_dome.get(w_ack.dome.get).tl(1)) {
+              when (io.b_field.get(w_ack.field.get).tl(1)) {
                 io.b_ltimer.get(1).wen(2) := (isAckAddr(CHAMP.L1TIMER_CNT.U))
                 io.b_ltimer.get(1).wen(4) := (isAckAddr(CHAMP.L1TIMER_CMP.U))
               }
@@ -462,7 +462,7 @@ class RegMem (p: RegMemParams) extends Module {
   //             WAIT
   // ------------------------------
   if (!p.readOnly) w_mb4s_wwait := w_ack.ctrl.get.wa & ~m_wmb4s.get.io.b_sout.valid else w_mb4s_wwait := false.B
-  w_mb4s_rwait := w_ack.ctrl.get.ra & ~io.b_port.read.ready(w_slct_ack.dome) 
+  w_mb4s_rwait := w_ack.ctrl.get.ra & ~io.b_port.read.ready(w_slct_ack.field) 
 
   w_ack_pwait := w_ack.valid & (w_mb4s_wwait | w_mb4s_rwait)
 
@@ -471,11 +471,11 @@ class RegMem (p: RegMemParams) extends Module {
   // ******************************
 
   // ******************************
-  //              DOME
+  //             FIELD
   // ******************************
-  if (p.useDome) {
-    for (d <- 0 until p.nDome) {
-      io.b_dome.get(d).free := (~m_req.io.b_sout.valid | (d.U =/= m_req.io.b_sout.dome.get)) & (~m_req.io.b_sout.valid | (d.U =/= m_req.io.b_sout.dome.get))
+  if (p.useField) {
+    for (f <- 0 until p.nField) {
+      io.b_field.get(f).free := (~m_req.io.b_sout.valid | (f.U =/= m_req.io.b_sout.field.get)) & (~m_req.io.b_sout.valid | (f.U =/= m_req.io.b_sout.field.get))
     }
   }
 
