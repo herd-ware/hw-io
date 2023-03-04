@@ -1,10 +1,10 @@
 /*
- * File: gpio.scala                                                            *
+ * File: gpio.scala
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:08:24 pm                                       *
- * Modified By: Mathieu Escouteloup                                            *
+ * Last Modified: 2023-03-03 03:55:56 pm
+ * Modified By: Mathieu Escouteloup
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
  * Copyright (c) 2023 HerdWare                                                 *
@@ -25,7 +25,7 @@ class Gpio (p: GpioParams) extends Module {
   val io = IO(new Bundle {
     val b_regmem = new GpioRegMemIO(p.nGpio32b)    
 
-    val b_gpio = new BiDirectIO(UInt((p.nGpio32b * 32).W))
+    val b_gpio = Vec(p.nGpio32b, new BiDirectIO(UInt(32.W)))
   })
 
   val r_eno = RegInit(VecInit(Seq.fill(p.nGpio32b)(0.U(32.W))))
@@ -59,10 +59,10 @@ class Gpio (p: GpioParams) extends Module {
     w_reg(g32) := r_reg(g32)
     w_eno(g32) := r_eno(g32)
     w_out(g32) := r_reg(g32) & r_eno(g32)
-  }
 
-  io.b_gpio.eno := w_eno.asUInt
-  io.b_gpio.out := w_out.asUInt
+    io.b_gpio(g32).eno := w_eno(g32)
+    io.b_gpio(g32).out := w_out(g32)
+  } 
 
   // ------------------------------
   //             READ
@@ -79,7 +79,7 @@ class Gpio (p: GpioParams) extends Module {
   }
 
   for (g32 <- 0 until p.nGpio32b) {
-    r_reg(g32) := (r_eno(g32) & w_reg(g32)) | (~r_eno(g32) & io.b_gpio.in((g32 + 1) * 32 - 1, g32 * 32))
+    r_reg(g32) := (r_eno(g32) & w_reg(g32)) | (~r_eno(g32) & io.b_gpio(g32).in)
   }
 
   // ******************************

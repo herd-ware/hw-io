@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-03-02 11:33:58 pm
+ * Last Modified: 2023-03-02 09:34:17 pm
  * Modified By: Mathieu Escouteloup
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -13,38 +13,16 @@
  */
 
 
-package herd.io.core
+package herd.io.core.hpm
 
 import chisel3._
 import chisel3.experimental.IO
 import chisel3.util._
 
-import herd.common.mem.mb4s._
-
-
-object IOCoreConfigBase extends IOCoreConfig (
-  pPort = Array(new Mb4sConfig (
-    debug = true,
-    readOnly = false,
-    nHart = 2,
-    nAddrBit = 32,
-    useAmo = false,
-    nDataByte = 4,
-    useField = true,
-    nField = 2,
-    multiField = false
-  )),
-
+object HpmConfigBase extends HpmConfig (
   debug = true,
-  nHart = 1,
-  nAddrBit = 32,
-  nAddrBase = "00000000",
+  nHart = 1, 
 
-  nChampTrapLvl = 2,
-
-  useReqReg = false,
-  nScratch = 4,
-  nCTimer = 2,
-  isHpmAct = Array(),
+  isHpmAct = Array("ALL"),
   hasHpmMap = Array()
 )

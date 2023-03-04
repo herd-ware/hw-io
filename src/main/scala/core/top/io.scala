@@ -1,10 +1,10 @@
 /*
- * File: io.scala                                                              *
+ * File: io.scala
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-03-02 01:37:46 pm                                       *
- * Modified By: Mathieu Escouteloup                                            *
+ * Last Modified: 2023-03-03 08:00:35 am
+ * Modified By: Mathieu Escouteloup
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
  * Copyright (c) 2023 HerdWare                                                 *
@@ -19,6 +19,7 @@ import chisel3._
 import chisel3.util._
 
 import herd.common.field._
+import herd.common.core.{HpcPipelineBus,HpcMemoryBus}
 import herd.common.mem.mb4s._
 import herd.common.isa.priv.{IRQ => PIRQ}
 import herd.common.isa.champ.{IRQ => HFIRQ}
@@ -26,6 +27,7 @@ import herd.common.isa.custom.{IRQ => CIRQ}
 import herd.io.core.regmem.{RegMem}
 import herd.io.core.clint.{Priv => PrivClint, Champ => ChampClint}
 import herd.io.core.clint.{ClintIO}
+import herd.io.core.hpm.{Hpm}
 import herd.io.periph.timer._
 
 
@@ -41,6 +43,9 @@ class IOCore (p: IOCoreParams) extends Module {
     val b_port = Flipped(new Mb4sIO(p.pPort(0)))
 
     val b_clint = new ClintIO(p.nDataBit)
+    val i_hpc_pipe = Input(Vec(p.nHart, new HpcPipelineBus()))
+    val i_hpc_mem = Input(Vec(p.nHart, new HpcMemoryBus()))
+    val o_hpm = Output(Vec(p.nHart, Vec(32, UInt(64.W))))
     
     val i_irq_lei = if (p.useChamp) Some(Input(Vec(p.nChampTrapLvl, Bool()))) else None
     val i_irq_lsi = if (p.useChamp) Some(Input(Vec(p.nChampTrapLvl, Bool()))) else None
@@ -58,6 +63,7 @@ class IOCore (p: IOCoreParams) extends Module {
 
   val m_clint_priv = if (!p.useChamp) Some(Module(new PrivClint(p))) else None
   val m_clint_champ = if (p.useChamp) Some(Module(new ChampClint(p))) else None
+  val m_hpm = Module(new Hpm(p))
 
   // ******************************
   //            REGMEM
@@ -141,6 +147,13 @@ class IOCore (p: IOCoreParams) extends Module {
   } else {
     m_mtimer.get.io.b_regmem <> m_regmem.io.b_mtimer.get
   }
+
+  // ******************************
+  //              HPM
+  // ******************************
+  m_hpm.io.i_pipe := io.i_hpc_pipe
+  m_hpm.io.i_mem := io.i_hpc_mem
+  io.o_hpm := m_hpm.io.o_csr
   
   // ******************************
   //            FIELD

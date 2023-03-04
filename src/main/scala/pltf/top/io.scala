@@ -1,10 +1,10 @@
 /*
- * File: io.scala                                                              *
+ * File: io.scala
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-03-02 01:38:27 pm                                       *
- * Modified By: Mathieu Escouteloup                                            *
+ * Last Modified: 2023-03-03 03:50:09 pm
+ * Modified By: Mathieu Escouteloup
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
  * Copyright (c) 2023 HerdWare                                                 *
@@ -42,7 +42,7 @@ class IOPltf (p: IOPltfParams) extends Module {
     val i_slct = if (p.useFieldSlct) Some(Input(new SlctBus(p.nField, p.nPart, 1))) else None  
     val b_port  = Flipped(new Mb4sIO(p.pPort(0)))
 
-    val b_gpio = new BiDirectIO(UInt(p.nGpio.W))
+    val b_gpio = Vec(p.nGpio32b, new BiDirectIO(UInt(32.W)))
     val b_spi_flash = if (p.useSpiFlash) Some(new SpiIO(1)) else None
     val b_ps2_kb = if (p.usePs2Keyboard) Some(new Ps2IO()) else None
     val b_uart = Vec(p.nUart, new UartIO())
