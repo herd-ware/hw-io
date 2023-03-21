@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-03-03 02:43:33 pm
+ * Last Modified: 2023-03-21 04:48:48 pm
  * Modified By: Mathieu Escouteloup
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -28,7 +28,7 @@ class Hpm(p: HpmParams) extends Module {
     val i_mem = Input(Vec(p.nHart, new HpcMemoryBus()))
 
     val o_hpc = Output(Vec(p.nHart, new HpcBus()))
-    val o_csr = Output(Vec(p.nHart, Vec(32, UInt(64.W))))
+    val o_csr = Output(Vec(p.nHart, Vec(32, UInt(64.W))))    
   })
 
   val init_hpc = Wire(Vec(p.nHart, new HpcBus()))

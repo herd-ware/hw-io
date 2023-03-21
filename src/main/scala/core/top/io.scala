@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-03-03 08:00:35 am
+ * Last Modified: 2023-03-21 04:51:45 pm
  * Modified By: Mathieu Escouteloup
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -51,6 +51,8 @@ class IOCore (p: IOCoreParams) extends Module {
     val i_irq_lsi = if (p.useChamp) Some(Input(Vec(p.nChampTrapLvl, Bool()))) else None
     val i_irq_mei = if (!p.useChamp) Some(Input(Bool())) else None
     val i_irq_msi = if (!p.useChamp) Some(Input(Bool())) else None
+
+    val o_dbg = if (p.debug) Some(Output(new IOCoreDbgBus(p))) else None
   })
 
   // ******************************
@@ -168,7 +170,7 @@ class IOCore (p: IOCoreParams) extends Module {
   //             DEBUG
   // ******************************
   if (p.debug) {
-    
+    io.o_dbg.get.hpc := m_hpm.io.o_hpc
   } 
 }
 
