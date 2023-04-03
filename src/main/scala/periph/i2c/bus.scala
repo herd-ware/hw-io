@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:08:34 pm                                       *
+ * Last Modified: 2023-04-03 10:08:59 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -45,7 +45,7 @@ class I2cStatusBus extends Bundle {
 class I2cConfigBus extends Bundle {
   val en = Bool()
   val irq = UInt(IRQ.NBIT.W)
-  val ncycle = UInt(32.W)
+  val cycle = UInt(32.W)
   val addr = UInt(8.W)
 }
 
@@ -63,7 +63,7 @@ class I2cRegMemIO(p: GenParams, nDataByte: Int) extends Bundle {
 
   val status = Output(UInt(32.W))
   val config = Output(UInt(32.W))
-  val ncycle = Output(UInt(32.W))
+  val cycle = Output(UInt(32.W))
   val addr = Output(UInt(8.W))
   
   val creq = Vec(nDataByte, Flipped(new GenRVIO(p, UInt(8.W), UInt(0.W))))

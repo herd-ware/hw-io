@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-03-02 01:38:17 pm                                       *
+ * Last Modified: 2023-04-03 10:12:54 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -383,8 +383,8 @@ class RegMem (p: RegMemParams) extends Module {
       when (isReqAddr(COMMON.SPI_FLASH_CONFIG.U)) {
         w_rdata := io.b_spi_flash.get.config        
       }
-      when (isReqAddr(COMMON.SPI_FLASH_NCYCLE.U)) {
-        w_rdata := io.b_spi_flash.get.ncycle        
+      when (isReqAddr(COMMON.SPI_FLASH_CYCLE.U)) {
+        w_rdata := io.b_spi_flash.get.cycle        
       }
       when (isReqAddr(COMMON.SPI_FLASH_ADDR.U)) {
         w_rdata := io.b_spi_flash.get.addr        
@@ -422,8 +422,8 @@ class RegMem (p: RegMemParams) extends Module {
       when (isReqAddr(COMMON.PS2_KB_CONFIG.U)) {
         w_rdata := io.b_ps2_kb.get.config        
       }
-      when (isReqAddr(COMMON.PS2_KB_NCYCLE.U)) {
-        w_rdata := io.b_ps2_kb.get.ncycle        
+      when (isReqAddr(COMMON.PS2_KB_CYCLE.U)) {
+        w_rdata := io.b_ps2_kb.get.cycle        
       } 
       when (isReqAddr(COMMON.PS2_KB_DATA.U)) {
         switch (w_req.ctrl.get.size) {
@@ -456,8 +456,8 @@ class RegMem (p: RegMemParams) extends Module {
         when (isReqAddr(COMMON.UART0_CONFIG.U + (u * COMMON.UART0_NBYTE).U)) {
           w_rdata := io.b_uart.get(u).config        
         }
-        when (isReqAddr(COMMON.UART0_NCYCLE.U + (u * COMMON.UART0_NBYTE).U)) {
-          w_rdata := io.b_uart.get(u).ncycle        
+        when (isReqAddr(COMMON.UART0_CYCLE.U + (u * COMMON.UART0_NBYTE).U)) {
+          w_rdata := io.b_uart.get(u).cycle        
         } 
         when (isReqAddr(COMMON.UART0_DATA.U + (u * COMMON.UART0_NBYTE).U)) {
           switch (w_req.ctrl.get.size) {
@@ -491,8 +491,8 @@ class RegMem (p: RegMemParams) extends Module {
         when (isReqAddr(COMMON.SPI0_CONFIG.U + (s * COMMON.SPI0_NBYTE).U)) {
           w_rdata := io.b_spi.get(s).config        
         }
-        when (isReqAddr(COMMON.SPI0_NCYCLE.U + (s * COMMON.SPI0_NBYTE).U)) {
-          w_rdata := io.b_spi.get(s).ncycle        
+        when (isReqAddr(COMMON.SPI0_CYCLE.U + (s * COMMON.SPI0_NBYTE).U)) {
+          w_rdata := io.b_spi.get(s).cycle        
         } 
         when (isReqAddr(COMMON.SPI0_DATA.U + (s * COMMON.SPI0_NBYTE).U)) {
           switch (w_req.ctrl.get.size) {
@@ -526,8 +526,8 @@ class RegMem (p: RegMemParams) extends Module {
         when (isReqAddr(COMMON.I2C0_CONFIG.U + (i * COMMON.I2C0_NBYTE).U)) {
           w_rdata := io.b_i2c.get(i).config        
         }
-        when (isReqAddr(COMMON.I2C0_NCYCLE.U + (i * COMMON.I2C0_NBYTE).U)) {
-          w_rdata := io.b_i2c.get(i).ncycle        
+        when (isReqAddr(COMMON.I2C0_CYCLE.U + (i * COMMON.I2C0_NBYTE).U)) {
+          w_rdata := io.b_i2c.get(i).cycle        
         } 
         when (isReqAddr(COMMON.I2C0_ADDR.U + (i * COMMON.I2C0_NBYTE).U)) {
           w_rdata := io.b_i2c.get(i).addr        
@@ -826,7 +826,7 @@ class RegMem (p: RegMemParams) extends Module {
       // SPI Flash
       if (p.useSpiFlash) {
         io.b_spi_flash.get.wen(1) := isAckAddr(COMMON.SPI_FLASH_CONFIG.U)
-        io.b_spi_flash.get.wen(2) := isAckAddr(COMMON.SPI_FLASH_NCYCLE.U)
+        io.b_spi_flash.get.wen(2) := isAckAddr(COMMON.SPI_FLASH_CYCLE.U)
         io.b_spi_flash.get.wen(3) := isAckAddr(COMMON.SPI_FLASH_ADDR.U)
         io.b_spi_flash.get.wen(4) := isAckAddr(COMMON.SPI_FLASH_OFFSET.U)
         switch (w_ack.ctrl.get.size) {
@@ -852,7 +852,7 @@ class RegMem (p: RegMemParams) extends Module {
       // PS/2 Keyboard
       if (p.usePs2Keyboard) {
         io.b_ps2_kb.get.wen(1) := isAckAddr(COMMON.PS2_KB_CONFIG.U)
-        io.b_ps2_kb.get.wen(2) := isAckAddr(COMMON.PS2_KB_NCYCLE.U)
+        io.b_ps2_kb.get.wen(2) := isAckAddr(COMMON.PS2_KB_CYCLE.U)
         when (isAckAddr(COMMON.PS2_KB_DATA.U)) {
           switch (w_ack.ctrl.get.size) {
             is (SIZE.B1.U) {
@@ -876,7 +876,7 @@ class RegMem (p: RegMemParams) extends Module {
       if (p.nUart > 0) {
         for (u <- 0 until p.nUart) {
           io.b_uart.get(u).wen(1) := isAckAddr(COMMON.UART0_CONFIG.U + (u * COMMON.UART0_NBYTE).U)
-          io.b_uart.get(u).wen(2) := isAckAddr(COMMON.UART0_NCYCLE.U + (u * COMMON.UART0_NBYTE).U)
+          io.b_uart.get(u).wen(2) := isAckAddr(COMMON.UART0_CYCLE.U + (u * COMMON.UART0_NBYTE).U)
           when (isAckAddr(COMMON.UART0_DATA.U + (u * COMMON.UART0_NBYTE).U)) {
             switch (w_ack.ctrl.get.size) {
               is (SIZE.B1.U) {
@@ -901,7 +901,7 @@ class RegMem (p: RegMemParams) extends Module {
       if (p.nSpi > 0) {
         for (s <- 0 until p.nSpi) {
           io.b_spi.get(s).wen(1) := isAckAddr(COMMON.SPI0_CONFIG.U + (s * COMMON.SPI0_NBYTE).U)
-          io.b_spi.get(s).wen(2) := isAckAddr(COMMON.SPI0_NCYCLE.U + (s * COMMON.SPI0_NBYTE).U)
+          io.b_spi.get(s).wen(2) := isAckAddr(COMMON.SPI0_CYCLE.U + (s * COMMON.SPI0_NBYTE).U)
           switch (w_ack.ctrl.get.size) {
             is (SIZE.B1.U) {
               io.b_spi.get(s).creq(0).valid := isAckAddr(COMMON.SPI0_CMD.U + (s * COMMON.SPI0_NBYTE).U)
@@ -927,7 +927,7 @@ class RegMem (p: RegMemParams) extends Module {
       if (p.nI2c > 0) {
         for (i <- 0 until p.nI2c) {
           io.b_i2c.get(i).wen(1) := isAckAddr(COMMON.I2C0_CONFIG.U + (i * COMMON.I2C0_NBYTE).U)
-          io.b_i2c.get(i).wen(2) := isAckAddr(COMMON.I2C0_NCYCLE.U + (i * COMMON.I2C0_NBYTE).U)
+          io.b_i2c.get(i).wen(2) := isAckAddr(COMMON.I2C0_CYCLE.U + (i * COMMON.I2C0_NBYTE).U)
           io.b_i2c.get(i).wen(3) := isAckAddr(COMMON.I2C0_ADDR.U + (i * COMMON.I2C0_NBYTE).U)
           switch (w_ack.ctrl.get.size) {
             is (SIZE.B1.U) {

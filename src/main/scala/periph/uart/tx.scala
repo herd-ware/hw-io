@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:10:41 pm                                       *
+ * Last Modified: 2023-04-03 10:11:32 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -59,7 +59,7 @@ class Tx (p: UartParams) extends Module {
   val m_ccnt = Module(new Counter(32))
   val m_bcnt = Module(new Counter(3))
 
-  m_ccnt.io.i_limit := r_config.ncycle
+  m_ccnt.io.i_limit := r_config.cycle
   m_ccnt.io.i_init := true.B
   m_ccnt.io.i_en := false.B
 
