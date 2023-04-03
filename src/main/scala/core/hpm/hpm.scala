@@ -1,10 +1,10 @@
 /*
- * File: hpm.scala
+ * File: hpm.scala                                                             *
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-03-21 04:48:48 pm
- * Modified By: Mathieu Escouteloup
+ * Last Modified: 2023-04-03 01:22:38 pm                                       *
+ * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
  * Copyright (c) 2023 HerdWare                                                 *
@@ -51,8 +51,14 @@ class Hpm(p: HpmParams) extends Module {
       if (List("ALU", "ALL").contains(str.toUpperCase())) {
         r_hpc(h).alu := r_hpc(h).alu + io.i_pipe(h).alu
       }
-      if (List("BR", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).br := r_hpc(h).br + io.i_pipe(h).br
+      if (List("BRU", "ALL").contains(str.toUpperCase())) {
+        r_hpc(h).bru := r_hpc(h).bru + io.i_pipe(h).bru
+      }
+      if (List("JAL", "ALL").contains(str.toUpperCase())) {
+        r_hpc(h).jal := r_hpc(h).jal + io.i_pipe(h).jal
+      }
+      if (List("JALR", "ALL").contains(str.toUpperCase())) {
+        r_hpc(h).jalr := r_hpc(h).jalr + io.i_pipe(h).jalr
       }
       if (List("MISPRED", "ALL").contains(str.toUpperCase())) {
         r_hpc(h).mispred := r_hpc(h).mispred + io.i_pipe(h).mispred
@@ -93,6 +99,12 @@ class Hpm(p: HpmParams) extends Module {
       if (List("RDCYCLE", "ALL").contains(str.toUpperCase())) {
         r_hpc(h).rdcycle := r_hpc(h).rdcycle + io.i_pipe(h).rdcycle
       }
+      if (List("SRCDEP", "ALL").contains(str.toUpperCase())) {
+        r_hpc(h).srcdep := r_hpc(h).srcdep + io.i_pipe(h).srcdep
+      }
+      if (List("CFLUSH", "ALL").contains(str.toUpperCase())) {
+        r_hpc(h).cflush := r_hpc(h).cflush + io.i_pipe(h).cflush
+      }
     }    
   }  
 
@@ -108,7 +120,7 @@ class Hpm(p: HpmParams) extends Module {
     io.o_csr(h)(1) := r_hpc(0).time
     io.o_csr(h)(2) := r_hpc(h).instret
     io.o_csr(h)(3) := r_hpc(h).alu
-    io.o_csr(h)(4) := r_hpc(h).br
+    io.o_csr(h)(4) := r_hpc(h).bru
     io.o_csr(h)(5) := r_hpc(h).mispred
     io.o_csr(h)(6) := r_hpc(h).ld
     io.o_csr(h)(7) := r_hpc(h).st
@@ -124,7 +136,13 @@ class Hpm(p: HpmParams) extends Module {
     io.o_csr(h)(17) := r_hpc(h).l1dmiss
     io.o_csr(h)(18) := r_hpc(h).l2miss
     io.o_csr(h)(19) := r_hpc(h).rdcycle
-  }  
+    io.o_csr(h)(20) := r_hpc(h).jal
+    io.o_csr(h)(21) := r_hpc(h).jalr
+    io.o_csr(h)(22) := r_hpc(h).call    
+    io.o_csr(h)(23) := r_hpc(h).ret 
+    io.o_csr(h)(24) := r_hpc(h).srcdep
+    io.o_csr(h)(25) := r_hpc(h).cflush
+  }
 
   // ------------------------------
   //            CUSTOM
@@ -133,9 +151,13 @@ class Hpm(p: HpmParams) extends Module {
     for (nm <- 0 until p.nHpmMap) {
       (p.hasHpmMap(nm).toUpperCase()) match {
         case "ALU"      => {io.o_csr(h)(3 + nm) := r_hpc(h).alu}
-        case "BR"       => {io.o_csr(h)(3 + nm) := r_hpc(h).br}
+        case "BRU"      => {io.o_csr(h)(3 + nm) := r_hpc(h).bru}
+        case "CALL"     => {io.o_csr(h)(3 + nm) := r_hpc(h).call}
+        case "CFLUSH"   => {io.o_csr(h)(3 + nm) := r_hpc(h).cflush}
         case "CYCLE"    => {io.o_csr(h)(3 + nm) := r_hpc(h).cycle}
         case "INSTRET"  => {io.o_csr(h)(3 + nm) := r_hpc(h).instret}
+        case "JAL"      => {io.o_csr(h)(3 + nm) := r_hpc(h).jal}
+        case "JALR"     => {io.o_csr(h)(3 + nm) := r_hpc(h).jalr}
         case "L1IHIT"   => {io.o_csr(h)(3 + nm) := r_hpc(h).l1ihit}
         case "L1IMISS"  => {io.o_csr(h)(3 + nm) := r_hpc(h).l1imiss}
         case "L1IPFTCH" => {io.o_csr(h)(3 + nm) := r_hpc(h).l1ipftch}
@@ -147,8 +169,10 @@ class Hpm(p: HpmParams) extends Module {
         case "L2PFTCH"  => {io.o_csr(h)(3 + nm) := r_hpc(h).l2pftch}
         case "LD"       => {io.o_csr(h)(3 + nm) := r_hpc(h).ld}
         case "MISPRED"  => {io.o_csr(h)(3 + nm) := r_hpc(h).mispred}
-        case "ST"       => {io.o_csr(h)(3 + nm) := r_hpc(h).st}
         case "RDCYCLE"  => {io.o_csr(h)(3 + nm) := r_hpc(h).rdcycle}
+        case "RET"      => {io.o_csr(h)(3 + nm) := r_hpc(h).ret}
+        case "SRCDEP"   => {io.o_csr(h)(3 + nm) := r_hpc(h).srcdep}
+        case "ST"       => {io.o_csr(h)(3 + nm) := r_hpc(h).st}
         case "TIME"     => {io.o_csr(h)(3 + nm) := r_hpc(h).time}
       }
     }
