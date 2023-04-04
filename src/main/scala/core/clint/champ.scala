@@ -1,10 +1,10 @@
 /*
- * File: champ.scala                                                           *
+ * File: champ.scala
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-27 06:23:43 pm                                       *
- * Modified By: Mathieu Escouteloup                                            *
+ * Last Modified: 2023-04-04 07:31:18 pm
+ * Modified By: Mathieu Escouteloup
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
  * Copyright (c) 2023 HerdWare                                                 *
@@ -80,20 +80,11 @@ class Champ (p: ClintParams) extends Module {
   w_pprio := PriorityEncoder(Reverse(w_pen.asUInt)) 
 
   // ******************************
-  //        RESET INTERRUPT
-  // ******************************
-  for (b <- 0 until p.nDataBit) {
-    when (io.b_core.ir(b)) {
-      r_ip(b) := false.B
-    }    
-  }
-
-  // ******************************
   //        PENDING INTERRUPTS
   // ******************************
   r_en := false.B
   for (b <- 0 until p.nDataBit) {
-    r_ip(b) := r_ip(b) | (io.b_core.ie(b) & io.i_irq(b))
+    r_ip(b) := (r_ip(b) & ~io.b_core.ir(b)) | (io.b_core.ie(b) & io.i_irq(b))
 
     when (~r_ip(b) & (io.b_core.ie(b) & io.i_irq(b))) {
       r_en := true.B

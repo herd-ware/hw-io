@@ -1,10 +1,10 @@
 /*
- * File: priv.scala                                                            *
+ * File: priv.scala
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-27 06:12:48 pm                                       *
- * Modified By: Mathieu Escouteloup                                            *
+ * Last Modified: 2023-04-04 07:50:03 pm
+ * Modified By: Mathieu Escouteloup
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
  * Copyright (c) 2023 HerdWare                                                 *
@@ -77,23 +77,14 @@ class Priv (p: ClintParams) extends Module {
   // Selects most important interrupt
   val w_pprio = Wire(UInt(log2Ceil(p.nClintPrio).W))
   // Reverse to have high priority in LSB
-  w_pprio := PriorityEncoder(w_pen.asUInt)
-
-  // ******************************
-  //        RESET INTERRUPT
-  // ******************************
-  for (b <- 0 until p.nDataBit) {
-    when (io.b_core.ir(b)) {
-      r_ip(b) := false.B
-    }    
-  }
+  w_pprio := PriorityEncoder(Reverse(w_pen.asUInt))
 
   // ******************************
   //        PENDING INTERRUPTS
   // ******************************
   r_en := false.B
   for (b <- 0 until p.nDataBit) {
-    r_ip(b) := r_ip(b) | (io.b_core.ie(b) & io.i_irq(b))
+    r_ip(b) := (r_ip(b) & ~io.b_core.ir(b)) | (io.b_core.ie(b) & io.i_irq(b))
 
     when (~r_ip(b) & (io.b_core.ie(b) & io.i_irq(b))) {
       r_en := true.B
@@ -106,6 +97,11 @@ class Priv (p: ClintParams) extends Module {
   io.b_core.en := r_en
   io.b_core.ecause := w_pcause((p.nClintPrio - 1).U - w_pprio) // Consider previous reverse
   io.b_core.ip := r_ip.asUInt
+
+  // ******************************
+  //            DEBUG
+  // ******************************
+  dontTouch(w_en)
 }
 
 object Priv extends App {
