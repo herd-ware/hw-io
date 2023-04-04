@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:10:46 pm                                       *
+ * Last Modified: 2023-04-03 10:11:40 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -105,7 +105,7 @@ class Uart(p: UartParams) extends Module {
                                     0.U(8.W),
                                     0.U(8.W),
                                     0.U(3.W), r_config.stop, r_config.parity, r_config.is8bit, r_config.en)
-    io.b_regmem.get.ncycle := r_config.ncycle
+    io.b_regmem.get.cycle := r_config.cycle
   }
 
   // ------------------------------
@@ -121,7 +121,7 @@ class Uart(p: UartParams) extends Module {
     }
   
     when (io.b_regmem.get.wen(2)) {
-      r_config.ncycle := io.b_regmem.get.wdata
+      r_config.cycle := io.b_regmem.get.wdata
     } 
   } else {
     r_config := io.i_config.get

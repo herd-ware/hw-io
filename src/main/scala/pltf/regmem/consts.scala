@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-27 06:24:09 pm                                       *
+ * Last Modified: 2023-04-03 10:12:19 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -77,7 +77,7 @@ object COMMON {
   def SPI_NBYTE             = 0x30
   def SPI_FLASH_STATUS      = "h4004700"
   def SPI_FLASH_CONFIG      = "h4004704"
-  def SPI_FLASH_NCYCLE      = "h4004708"
+  def SPI_FLASH_CYCLE       = "h4004708"
   def SPI_FLASH_ADDR        = "h400470c"
   def SPI_FLASH_OFFSET      = "h4004710"
   def SPI_FLASH_CMD         = "h4004720"
@@ -87,7 +87,7 @@ object COMMON {
   def PS2_KB_NBYTE          = 0x20
   def PS2_KB_STATUS         = "h4004740"
   def PS2_KB_CONFIG         = "h4004744"
-  def PS2_KB_NCYCLE         = "h4004748"
+  def PS2_KB_CYCLE          = "h4004748"
   def PS2_KB_DATA           = "h4004750"
 
   // UART (First 0)     
@@ -95,7 +95,7 @@ object COMMON {
   def UART0_NBYTE           = 0x20
   def UART0_STATUS          = "h4004800"
   def UART0_CONFIG          = "h4004804"
-  def UART0_NCYCLE          = "h4004808"
+  def UART0_CYCLE           = "h4004808"
   def UART0_DATA            = "h4004810"
 
   // SPI (First 0)     
@@ -103,7 +103,7 @@ object COMMON {
   def SPI0_NBYTE            = 0x20
   def SPI0_STATUS           = "h4004900"
   def SPI0_CONFIG           = "h4004904"
-  def SPI0_NCYCLE           = "h4004908"
+  def SPI0_CYCLE            = "h4004908"
   def SPI0_CMD              = "h4004910"
   def SPI0_DATA             = "h4004918"
 
@@ -112,7 +112,7 @@ object COMMON {
   def I2C0_NBYTE            = 0x20
   def I2C0_STATUS           = "h4004a00"
   def I2C0_CONFIG           = "h4004a04"
-  def I2C0_NCYCLE           = "h4004a08"
+  def I2C0_CYCLE            = "h4004a08"
   def I2C0_ADDR             = "h4004a0c"
   def I2C0_CMD              = "h4004a10"
   def I2C0_DATA             = "h4004a18"

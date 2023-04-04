@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:10:35 pm                                       *
+ * Last Modified: 2023-04-03 10:11:27 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -49,7 +49,7 @@ class Rx (p: UartParams) extends Module {
   //            CONFIG
   // ******************************
   val r_config = Reg(new UartConfigBus())
-  val w_half = (r_config.ncycle >> 2)
+  val w_half = (r_config.cycle >> 2)
 
   when (r_fsm === s0IDLE) {
     r_config := io.i_config
@@ -67,7 +67,7 @@ class Rx (p: UartParams) extends Module {
   val m_ccnt = Module(new Counter(32))
   val m_bcnt = Module(new Counter(3))
 
-  m_ccnt.io.i_limit := r_config.ncycle
+  m_ccnt.io.i_limit := r_config.cycle
   m_ccnt.io.i_init := true.B
   m_ccnt.io.i_en := false.B
 
