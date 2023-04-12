@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-04-03 01:22:38 pm                                       *
+ * Last Modified: 2023-04-11 05:46:24 pm                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -45,65 +45,65 @@ class Hpm(p: HpmParams) extends Module {
   r_hpc(0).cycle := r_hpc(0).cycle + 1.U
   r_hpc(0).time := r_hpc(0).time + 1.U
   for (h <- 0 until p.nHart) {
-    r_hpc(h).instret := r_hpc(h).instret + io.i_pipe(h).instret
+    r_hpc(h).instret := r_hpc(h).instret + PopCount(io.i_pipe(h).instret.asUInt)
     
     for (str <- concat(p.isHpmAct, p.hasHpmMap)) {
       if (List("ALU", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).alu := r_hpc(h).alu + io.i_pipe(h).alu
+        r_hpc(h).alu := r_hpc(h).alu + PopCount(io.i_pipe(h).alu.asUInt)
       }
       if (List("BRU", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).bru := r_hpc(h).bru + io.i_pipe(h).bru
+        r_hpc(h).bru := r_hpc(h).bru + PopCount(io.i_pipe(h).bru.asUInt)
       }
       if (List("JAL", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).jal := r_hpc(h).jal + io.i_pipe(h).jal
+        r_hpc(h).jal := r_hpc(h).jal + PopCount(io.i_pipe(h).jal.asUInt)
       }
       if (List("JALR", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).jalr := r_hpc(h).jalr + io.i_pipe(h).jalr
+        r_hpc(h).jalr := r_hpc(h).jalr + PopCount(io.i_pipe(h).jalr.asUInt)
       }
       if (List("MISPRED", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).mispred := r_hpc(h).mispred + io.i_pipe(h).mispred
+        r_hpc(h).mispred := r_hpc(h).mispred + PopCount(io.i_pipe(h).mispred.asUInt)
       }
       if (List("LD", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).ld := r_hpc(h).ld + io.i_pipe(h).ld
+        r_hpc(h).ld := r_hpc(h).ld + PopCount(io.i_pipe(h).ld.asUInt)
       }
       if (List("ST", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).st := r_hpc(h).st + io.i_pipe(h).st
+        r_hpc(h).st := r_hpc(h).st + PopCount(io.i_pipe(h).st.asUInt)
       }
       if (List("L1IHIT", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).l1ihit := r_hpc(h).l1ihit + io.i_mem(h).l1ihit
+        r_hpc(h).l1ihit := r_hpc(h).l1ihit + PopCount(io.i_mem(h).l1ihit.asUInt)
       }
       if (List("L1IPFTCH", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).l1ipftch := r_hpc(h).l1ipftch + io.i_mem(h).l1ipftch
+        r_hpc(h).l1ipftch := r_hpc(h).l1ipftch + PopCount(io.i_mem(h).l1ipftch.asUInt)
       }
       if (List("L1IMISS", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).l1imiss := r_hpc(h).l1imiss + io.i_mem(h).l1imiss
+        r_hpc(h).l1imiss := r_hpc(h).l1imiss + PopCount(io.i_mem(h).l1imiss.asUInt)
       }
       if (List("L1DHIT", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).l1dhit := r_hpc(h).l1dhit + io.i_mem(h).l1dhit
+        r_hpc(h).l1dhit := r_hpc(h).l1dhit + PopCount(io.i_mem(h).l1dhit.asUInt)
       }
       if (List("L1DPFTCH", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).l1dpftch := r_hpc(h).l1dpftch + io.i_mem(h).l1dpftch
+        r_hpc(h).l1dpftch := r_hpc(h).l1dpftch + PopCount(io.i_mem(h).l1dpftch.asUInt)
       }
       if (List("L1DMISS", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).l1dmiss := r_hpc(h).l1dmiss + io.i_mem(h).l1dmiss
+        r_hpc(h).l1dmiss := r_hpc(h).l1dmiss + PopCount(io.i_mem(h).l1dmiss.asUInt)
       }
       if (List("L2HIT", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).l2hit := r_hpc(h).l2hit + io.i_mem(h).l2hit
+        r_hpc(h).l2hit := r_hpc(h).l2hit + PopCount(io.i_mem(h).l2hit.asUInt)
       }
       if (List("L2PFTCH", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).l2pftch := r_hpc(h).l2pftch + io.i_mem(h).l2pftch
+        r_hpc(h).l2pftch := r_hpc(h).l2pftch + PopCount(io.i_mem(h).l2pftch.asUInt)
       }
       if (List("L2MISS", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).l2miss := r_hpc(h).l2miss + io.i_mem(h).l2miss
+        r_hpc(h).l2miss := r_hpc(h).l2miss + PopCount(io.i_mem(h).l2miss.asUInt)
       }
       if (List("RDCYCLE", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).rdcycle := r_hpc(h).rdcycle + io.i_pipe(h).rdcycle
+        r_hpc(h).rdcycle := r_hpc(h).rdcycle + PopCount(io.i_pipe(h).rdcycle.asUInt)
       }
       if (List("SRCDEP", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).srcdep := r_hpc(h).srcdep + io.i_pipe(h).srcdep
+        r_hpc(h).srcdep := r_hpc(h).srcdep + PopCount(io.i_pipe(h).srcdep.asUInt)
       }
       if (List("CFLUSH", "ALL").contains(str.toUpperCase())) {
-        r_hpc(h).cflush := r_hpc(h).cflush + io.i_pipe(h).cflush
+        r_hpc(h).cflush := r_hpc(h).cflush + PopCount(io.i_pipe(h).cflush.asUInt)
       }
     }    
   }  
