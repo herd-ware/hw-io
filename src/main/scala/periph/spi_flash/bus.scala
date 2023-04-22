@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:09:36 pm                                       *
+ * Last Modified: 2023-04-03 10:10:56 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -39,7 +39,7 @@ class SpiFlashStatusBus(p: SpiFlashParams) extends Bundle {
 class SpiFlashConfigBus(p: SpiFlashParams) extends Bundle {
   val en = Bool()
   val mode = UInt(MODE.NBIT.W)
-  val ncycle = UInt(32.W)
+  val cycle = UInt(32.W)
   val irq = UInt(IRQ.NBIT.W)
   val auto = Bool()
   val addr = UInt(p.nAddrBit.W)
@@ -62,7 +62,7 @@ class SpiFlashRegMemIO(p: GenParams, nDataByte: Int) extends Bundle {
 
   val status = Output(UInt(32.W))
   val config = Output(UInt(32.W))
-  val ncycle = Output(UInt(32.W))
+  val cycle = Output(UInt(32.W))
   val addr = Output(UInt(32.W))
   val offset = Output(UInt(32.W))
   

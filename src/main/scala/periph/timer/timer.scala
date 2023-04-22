@@ -1,10 +1,10 @@
 /*
- * File: timer.scala                                                           *
+ * File: timer.scala
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:10:08 pm                                       *
- * Modified By: Mathieu Escouteloup                                            *
+ * Last Modified: 2023-04-04 07:29:57 pm
+ * Modified By: Mathieu Escouteloup
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
  * Copyright (c) 2023 HerdWare                                                 *
@@ -84,34 +84,36 @@ class Timer(p: TimerParams) extends Module {
   // ------------------------------
   //             WRITE
   // ------------------------------   
-  when (io.b_regmem.wen(0)) {
+  when (io.b_regmem.wen(2)) {
     r_cnt := Cat(r_cnt(63, 32), io.b_regmem.wdata)
   }
-  when (io.b_regmem.wen(1)) {
+  when (io.b_regmem.wen(3)) {
     r_cnt := Cat(io.b_regmem.wdata, r_cnt(31, 0))
   }
-  when (io.b_regmem.wen(0) & io.b_regmem.wen(1)) {
+  when (io.b_regmem.wen(2) & io.b_regmem.wen(3)) {
     r_cnt := io.b_regmem.wdata
   }
 
-  when (io.b_regmem.wen(2)) {
+  when (io.b_regmem.wen(4)) {
     r_cmp := Cat(r_cmp(63, 32), io.b_regmem.wdata)
   }
-  when (io.b_regmem.wen(3)) {
+  when (io.b_regmem.wen(5)) {
     r_cmp := Cat(io.b_regmem.wdata, r_cmp(31, 0))
   }
-  when (io.b_regmem.wen(2) & io.b_regmem.wen(3)) {
+  when (io.b_regmem.wen(4) & io.b_regmem.wen(5)) {
     r_cmp := io.b_regmem.wdata
   }
 
   // ******************************
   //            TIMER
   // ******************************
-  when (r_config.en) {
-    r_cnt := r_cnt + 1.U
-  }.otherwise {
-    r_cnt := 0.U
-  }  
+  when (~(io.b_regmem.wen(4) | io.b_regmem.wen(5))) {
+    when (r_config.en) {
+      r_cnt := r_cnt + 1.U
+    }.otherwise {
+      r_cnt := 0.U
+    }  
+  }
 
   w_over := r_config.en & (r_cnt >= r_cmp)
 

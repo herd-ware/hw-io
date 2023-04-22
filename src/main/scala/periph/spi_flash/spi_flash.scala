@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:09:52 pm                                       *
+ * Last Modified: 2023-04-03 10:11:10 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -58,7 +58,7 @@ class SpiFlashCtrl (p: SpiFlashParams) extends Module {
   val m_bcnt = Module(new Counter(3))
   val m_dcnt = Module(new Counter(p.nAddrBit))
 
-  m_ccnt.io.i_limit := r_config.ncycle
+  m_ccnt.io.i_limit := r_config.cycle
   m_ccnt.io.i_init := (r_fsm === s0IDLE)
   m_ccnt.io.i_en := (r_fsm =/= s0IDLE)
 
@@ -73,8 +73,8 @@ class SpiFlashCtrl (p: SpiFlashParams) extends Module {
   // ******************************
   //             SCLK
   // ******************************
-  val w_half = (m_ccnt.io.o_val === ((r_config.ncycle >> 1.U) - 1.U))
-  val w_full = (m_ccnt.io.o_val === (r_config.ncycle - 1.U))
+  val w_half = (m_ccnt.io.o_val === ((r_config.cycle >> 1.U) - 1.U))
+  val w_full = (m_ccnt.io.o_val === (r_config.cycle - 1.U))
 
   when (r_fsm =/= s0IDLE) {
     when (w_half | w_full) {
@@ -438,7 +438,7 @@ class SpiFlash (p: SpiFlashParams) extends Module {
                                     0.U(8.W),
                                     0.U(8.W),
                                     0.U(3.W), r_config.mode, 0.U(2.W), r_config.en)
-    io.b_regmem.get.ncycle := r_config.ncycle
+    io.b_regmem.get.cycle := r_config.cycle
     io.b_regmem.get.addr := r_config.addr
     io.b_regmem.get.offset := r_config.offset
   }
@@ -456,7 +456,7 @@ class SpiFlash (p: SpiFlashParams) extends Module {
     }
   
     when (io.b_regmem.get.wen(2)) {
-      r_config.ncycle := io.b_regmem.get.wdata
+      r_config.cycle := io.b_regmem.get.wdata
     }  
   
     when (io.b_regmem.get.wen(3)) {

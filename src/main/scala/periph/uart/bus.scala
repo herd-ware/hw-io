@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-25 10:10:13 pm                                       *
+ * Last Modified: 2023-04-03 10:11:19 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -45,7 +45,7 @@ class UartConfigBus extends Bundle {
   val parity = Bool()
   val stop = UInt(2.W)
   val irq = UInt(IRQ.NBIT.W)
-  val ncycle = UInt(32.W)
+  val cycle = UInt(32.W)
 }
 
 // ******************************
@@ -65,7 +65,7 @@ class UartRegMemIO(p: GenParams, nDataByte: Int) extends Bundle {
 
   val status = Output(UInt(32.W))
   val config = Output(UInt(32.W))
-  val ncycle = Output(UInt(32.W))
+  val cycle = Output(UInt(32.W))
 
   val send = Vec(nDataByte, Flipped(new GenRVIO(p, UInt(0.W), UInt(8.W))))
   val rec = Vec(nDataByte, new GenRVIO(p, Bool(), UInt(8.W)))

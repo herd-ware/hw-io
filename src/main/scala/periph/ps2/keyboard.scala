@@ -3,7 +3,7 @@
  * Created Date: 2023-02-25 09:48:16 pm                                        *
  * Author: Mathieu Escouteloup                                                 *
  * -----                                                                       *
- * Last Modified: 2023-02-26 09:50:23 am                                       *
+ * Last Modified: 2023-04-03 10:09:50 am                                       *
  * Modified By: Mathieu Escouteloup                                            *
  * -----                                                                       *
  * License: See LICENSE.md                                                     *
@@ -52,7 +52,7 @@ class Ps2KeyboardCtrl (p: Ps2Params) extends Module {
   val m_ccnt = Module(new Counter(33))
   val m_bcnt = Module(new Counter(3))
 
-  m_ccnt.io.i_limit := (r_config.ncycle << 1.U)
+  m_ccnt.io.i_limit := (r_config.cycle << 1.U)
   m_ccnt.io.i_init := (r_fsm === s0IDLE) | (r_fsm === s4REND)
   m_ccnt.io.i_en := (r_fsm =/= s0IDLE) & (r_fsm =/= s4REND)
 
@@ -66,9 +66,9 @@ class Ps2KeyboardCtrl (p: Ps2Params) extends Module {
   val w_fall = Wire(Bool())
   val w_rise = Wire(Bool())
 
-  val w_half = (m_ccnt.io.o_val === ((r_config.ncycle >> 1.U) - 1.U))
-  val w_full = (m_ccnt.io.o_val === (r_config.ncycle - 1.U))
-  val w_double = (m_ccnt.io.o_val === ((r_config.ncycle << 1.U) - 1.U))
+  val w_half = (m_ccnt.io.o_val === ((r_config.cycle >> 1.U) - 1.U))
+  val w_full = (m_ccnt.io.o_val === (r_config.cycle - 1.U))
+  val w_double = (m_ccnt.io.o_val === ((r_config.cycle << 1.U) - 1.U))
 
   when (r_fsm =/= s0IDLE) {
     when (w_half | w_full) {
@@ -305,7 +305,7 @@ class Ps2Keyboard (p: Ps2Params) extends Module {
                                     0.U(8.W),
                                     0.U(8.W),
                                     0.U(7.W), r_config.en)
-    io.b_regmem.get.ncycle := r_config.ncycle
+    io.b_regmem.get.cycle := r_config.cycle
   }
 
   // ------------------------------
@@ -318,7 +318,7 @@ class Ps2Keyboard (p: Ps2Params) extends Module {
     }
   
     when (io.b_regmem.get.wen(2)) {
-      r_config.ncycle := io.b_regmem.get.wdata
+      r_config.cycle := io.b_regmem.get.wdata
     }
   }
 
